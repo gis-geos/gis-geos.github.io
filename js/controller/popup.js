@@ -5,6 +5,35 @@ import {URLGeoJson, clickpopup, urlPostGCF} from '../template/template.js';
 import {insertMarker,deleteMarker} from './marker.js';
 import {setInner,textBlur,onClick, getValue,setValue} from 'https://jscroot.github.io/element/croot.js';
 import { postWithToken } from "https://jscroot.github.io/api/croot.js";
+import { setCookieWithExpireHour } from 'https://jscroot.github.io/cookie/croot.js';
+
+let userToken;
+
+export function getTokenFromCookies(cookieName) {
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === cookieName) {
+      userToken = value; // Store the token in a global variable
+      return value;
+    }
+  }
+  return null;
+}
+export function getTokenFromAPI() {
+  const tokenUrl = "https://us-central1-gcpospasial.cloudfunctions.net/login-gis";
+  fetch(tokenUrl)
+    .then(response => response.json())
+    .then(tokenData => {
+      if (tokenData.token) {
+        userToken = tokenData.token;
+        console.log('Token dari API:', userToken);
+        setCookieWithExpireHour('user_token', userToken, 2); // Set the token in cookies
+      }
+    })
+    .catch(error => console.error('Gagal mengambil token:', error));
+}
+
 
 
 export function onClosePopupClick() {
@@ -17,29 +46,28 @@ export function onDeleteMarkerClick() {
     popupinfo.setPosition(undefined);
     deleteMarker(idmarker);
 }
-
 export function onSubmitMarkerClick() {
-    let long = getValue('long');
-    let lat = getValue('lat');
-    let name = getValue('name');
-    let volume = getValue('volume');
-    let type = getValue('type');
-      let data = {
-        "type" : type,
-        "name" : name,
-        "volume" : volume,
-        "coordinates" : [
-          parseFloat(long),parseFloat(lat)
-        ]
-      };
-      postWithToken(urlPostGCF,"Token","dsf9ygf87h98u479y98dj0fs89nfd7",data,afterSubmitCOG);
-    overlay.setPosition(undefined);
-    textBlur('popup-closer');
-      insertMarker(name,long,lat,volume);
-      idmarker.id=idmarker.id+1;
-    console.log(name)
+  let long = getValue('long');
+  let lat = getValue('lat');
+  let name = getValue('name');
+  let volume = getValue('volume');
+  let type = getValue('type');
 
+  let data = {
+    "type": type,
+    "name": name,
+    "volume": volume,
+    "coordinates": [parseFloat(long), parseFloat(lat)]
+  };
+
+  postWithToken(urlPostGCF, "Login", userToken, data, afterSubmitCOG);
+  overlay.setPosition(undefined);
+  textBlur('popup-closer');
+  insertMarker(name, long, lat, volume);
+  idmarker.id = idmarker.id + 1;
+  console.log(name);
 }
+
 
 function afterSubmitCOG(result){
     console.log(result);

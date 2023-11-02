@@ -2,7 +2,7 @@ import { setCookieWithExpireHour } from 'https://jscroot.github.io/cookie/croot.
 
 //token
 export function getTokenFromAPI() {
-  const tokenUrl = "https://asia-southeast2-gis-project-401902.cloudfunctions.net/Login";
+  const tokenUrl = "https://us-central1-gcpospasial.cloudfunctions.net/login-gis";
   fetch(tokenUrl)
     .then(response => response.json())
     .then(tokenData => {

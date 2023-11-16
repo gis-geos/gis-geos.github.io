@@ -24,14 +24,14 @@ export function getTokenFromAPI() {
       if (tokenData.token) {
         userToken = tokenData.token;
         console.log('Token dari API:', userToken);
-        setCookieWithExpireHour('user_token', userToken, 2); // Set the token in cookies
+        setCookieWithExpireHour('login', userToken, 2); // Set the token in cookies
       }
     })
     .catch(error => console.error('Gagal mengambil token:', error));
 }
 
 // Retrieve the token from cookies
-userToken = getTokenFromCookies('user_token');
+userToken = getTokenFromCookies('login');
 
 export function onClosePopupClick() {
   overlay.setPosition(undefined);
@@ -58,7 +58,7 @@ export function onSubmitMarkerClick() {
     "coordinates": [parseFloat(long), parseFloat(lat)]
   };
 
-  postWithToken(urlPostGCF, "Login", userToken, data, afterSubmitCOG);
+  postWithToken(urlPostGCF, "login", userToken, data, afterSubmitCOG);
   overlay.setPosition(undefined);
   textBlur('popup-closer');
   insertMarker(name, long, lat, volume);

@@ -45,7 +45,7 @@ export function AlertPost(value){
 function ResponsePostLogin(response) {
   if (response && response.token) {
     console.log('Token User:', response.token);
-    setCookieWithExpireHour('user_token', response.token, 2);
+    setCookieWithExpireHour('login', response.token, 2);
     window.location.href = 'index.html';
     alert("Selamat Datang")
   } else {
